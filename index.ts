@@ -17,6 +17,22 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}`)
 })
 
+async function testFetchingGuildMember(client: Discord.Client){
+  console.log("---TEST---");
+  const discord_id = "Shoshin#6925";
+  const guild_id = "512903652453777418"; // currently test server
+  let guild = await client.guilds.fetch(guild_id);
+  // Fetch latest list of members from server
+  let members = await guild.members.fetch();
+  // Find discord tag from list
+  let member = await guild.members.cache.find(u => u.user.tag === discord_id);
+  // Copy the role id from the server to here
+  let verified_role_id = "847716353746010123";
+  let member_role_manager = member?.roles;
+  let msg = await member_role_manager?.add(verified_role_id);
+  console.log("---TEST---");
+}
+
 client.on('message', msg => {
   if (msg.content == 'ping') {
     msg.reply('Pong!')
@@ -26,7 +42,7 @@ client.on('message', msg => {
     // From that cache find the username#tag of search person
     const str = JSON.stringify(client.users.cache);
     msg.reply(`${str}`);
-
+    testFetchingGuildMember(client);
   }
 })
 
@@ -38,19 +54,32 @@ const port = 4000;
 
 let database : Record<string, string> = {};
 // Try to listen for verify links
-app.get('/verify', (req,res) => {
+app.get('/verify', async (req,res) => {
   const id = req.query.id!?.toString();
   console.log("received message from public ip")
   // search id from database
   const discord_id = database[id];
   if (discord_id){
-    // if it's verified success
-    // otherwise verify it
+    // TODO: Obtain guild i.e Server
+    const guild_id = "512903652453777418"; // currently test server
+    let guild = await client.guilds.fetch(guild_id);
+    // Find discord tag from list
+    let member = await guild.members.cache.find(u => u.user.tag === discord_id);
+    // TODO: Copy the role id from the server to here
+    let verified_role_id = "847716353746010123";
+    let member_role_manager = member?.roles;
+    try {
+      await member_role_manager?.add(verified_role_id);
+    }catch (err) {
+      console.log(err);
+    }
     console.log(`going to update ${discord_id}'s role`);
+    res.send("You're verified, otherwise ping the execs");
   } else {
     console.log(`Received a bogus uuid: ${id}`)
   }
 })
+
 
 app.post('/sendEmail',(req, res) => {
   // add zid and discord_id into sqlite database
@@ -64,7 +93,7 @@ app.post('/sendEmail',(req, res) => {
   // Send email to zid@ad.unsw.edu.au
   const sender = "A&Dsoc verification <test@shoshinprograms.com>";
   const recipient = "test@shoshinprograms.com";
-  const subject = "Click here to finish verification";
+  const subject = "A&Dsoc: Click here to finish verification";
   const body_text = `Click here to finish the verification: ${website}/verify?id=${new_uuid}`;
   const charset = "UTF-8";
   let ses = new AWS.SES();
