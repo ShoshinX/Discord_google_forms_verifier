@@ -1,7 +1,7 @@
 
 import Discord from "discord.js";
 // setup your token in src/token.ts
-import {token} from "./src/token";
+import {token,guild_id,verified_guild_role_id,website, sender_email} from "./src/token";
 import express from "express";
 import crypto from "crypto";
 import AWS from "aws-sdk";
@@ -15,6 +15,42 @@ app.use(express.json()); // to parse application/json
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}`)
+})
+
+client.on('message', msg => {
+  // No need for processing messages
+})
+
+
+client.login(token);
+
+const port = 4000;
+
+
+let database : Record<string, string> = {};
+// Try to listen for verify links
+app.get('/verify', async (req,res) => {
+  const id = req.query.id!?.toString();
+  console.log("received message from public ip")
+  // search id from database
+  const discord_id = database[id];
+  if (discord_id){
+    let guild = await client.guilds.fetch(guild_id);
+    // Find discord tag from list
+    let member = await guild.members.cache.find(u => u.user.tag === discord_id);
+    // TODO: Copy the role id from the server to here
+    let verified_role_id = verified_guild_role_id;
+    let member_role_manager = member?.roles;
+    try {
+      await member_role_manager?.add(verified_role_id);
+    }catch (err) {
+      console.log(err);
+    }
+    console.log(`going to update ${discord_id}'s role`);
+    res.send("You're verified, otherwise ping the execs");
+  } else {
+    console.log(`Received a bogus uuid: ${id}`)
+  }
 })
 
 async function testFetchingGuildMember(client: Discord.Client){
@@ -33,53 +69,6 @@ async function testFetchingGuildMember(client: Discord.Client){
   console.log("---TEST---");
 }
 
-client.on('message', msg => {
-  if (msg.content == 'ping') {
-    msg.reply('Pong!')
-  } else if (msg.content == "list") {
-    // Obtain the guild
-    // Fetch all the members of the guild to cache
-    // From that cache find the username#tag of search person
-    const str = JSON.stringify(client.users.cache);
-    msg.reply(`${str}`);
-    testFetchingGuildMember(client);
-  }
-})
-
-
-client.login(token);
-
-const port = 4000;
-
-
-let database : Record<string, string> = {};
-// Try to listen for verify links
-app.get('/verify', async (req,res) => {
-  const id = req.query.id!?.toString();
-  console.log("received message from public ip")
-  // search id from database
-  const discord_id = database[id];
-  if (discord_id){
-    // TODO: Obtain guild i.e Server
-    const guild_id = "512903652453777418"; // currently test server
-    let guild = await client.guilds.fetch(guild_id);
-    // Find discord tag from list
-    let member = await guild.members.cache.find(u => u.user.tag === discord_id);
-    // TODO: Copy the role id from the server to here
-    let verified_role_id = "847716353746010123";
-    let member_role_manager = member?.roles;
-    try {
-      await member_role_manager?.add(verified_role_id);
-    }catch (err) {
-      console.log(err);
-    }
-    console.log(`going to update ${discord_id}'s role`);
-    res.send("You're verified, otherwise ping the execs");
-  } else {
-    console.log(`Received a bogus uuid: ${id}`)
-  }
-})
-
 
 app.post('/sendEmail',(req, res) => {
   // add zid and discord_id into sqlite database
@@ -88,11 +77,10 @@ app.post('/sendEmail',(req, res) => {
   // This should be fine since we're not storing sensitive personal data.
   let new_uuid = crypto.randomBytes(16).toString("hex");
   database[new_uuid] = discord_id!.toString();
-  // TODO
-  const website = "https://2fd57f9acb0815.localhost.run";
   // Send email to zid@ad.unsw.edu.au
-  const sender = "A&Dsoc verification <test@shoshinprograms.com>";
-  const recipient = "test@shoshinprograms.com";
+  // TODO
+  const sender = `A&Dsoc verification <${sender_email}>`;
+  const recipient = `${zid}@ad.unsw.edu.au`;
   const subject = "A&Dsoc: Click here to finish verification";
   const body_text = `Click here to finish the verification: ${website}/verify?id=${new_uuid}`;
   const charset = "UTF-8";
