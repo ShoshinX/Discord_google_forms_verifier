@@ -2,6 +2,9 @@
 - runs on port 4000 of the server
 - to run use `yarn run run`
 
+# Required
+- Create a `token.ts` file that exports `token,guild_id,verified_guild_id, website, sender_email`
+
 # Libraries used
 - See package.json
 
