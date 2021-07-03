@@ -1,5 +1,6 @@
 # Discord verifier server
 - runs on port 4000 of the server
+- to install yarn packages use `yarn install`
 - to run use `yarn run run`
 
 # Required

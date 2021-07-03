@@ -10,3 +10,4 @@ yarn*
 token.ts
 node_modules
 build
+.yarn
