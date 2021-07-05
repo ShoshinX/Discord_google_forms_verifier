@@ -109,7 +109,6 @@ app.post('/sendEmail', async (req, res) => {
   // Specify the parameters to pass to the API.
   let transporter = nodemailer.createTransport({
       service: 'gmail',
-      secure:true,
       auth: {
           user: gmail_user,
           pass: gmail_pass,
