@@ -108,7 +108,9 @@ app.post('/sendEmail', async (req, res) => {
   const charset = "UTF-8";
   // Specify the parameters to pass to the API.
   let transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
       auth: {
           user: gmail_user,
           pass: gmail_pass,
