@@ -53,11 +53,11 @@ client.on('guildMemberAdd', member => {
   // If member is on the ban list then ghost.
   if (ban_list.includes(member.id)) return;
   member.send(`Hello ${member.user.tag}! Welcome to ${server_name}!
-  Please fill in the following form so our exec team can verify you!
+  Please fill in the following form so I can verify you!
   ${google_form_verifier_url}
-  Once you're done, feel free to ping the execs so they can give you access to the rest of the server. 
-  
-  Hope you have fun here!`)
+  Once you've filled in the form, our bot should send you an email!
+  Reply to me with the secret message in the email~`
+  )
   console.log(`${member.user.tag} has entered`)
 })
 
@@ -109,6 +109,10 @@ app.post('/sendEmail', async (req, res) => {
   // Specify the parameters to pass to the API.
   let transporter = nodemailer.createTransport({
       service: 'gmail',
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: true, // true for 587, false for other ports
+      requireTLS: true,
       auth: {
           user: gmail_user,
           pass: gmail_pass,
