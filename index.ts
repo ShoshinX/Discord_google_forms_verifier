@@ -1,7 +1,7 @@
 
 import Discord, { Message } from "discord.js";
 // setup your token in src/token.ts
-import {token,guild_id,verified_guild_role_id,website, sender_email, gmail_pass, gmail_user, channel_log_id, google_form_verifier_url,server_name, ban_list, oauth2} from "./src/token";
+import {token,guild_id,verified_guild_role_id,website, sender_email, gmail_pass, gmail_user, channel_log_id, google_form_verifier_url,server_name, ban_list} from "./src/token";
 import express from "express";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
@@ -110,10 +110,8 @@ app.post('/sendEmail', async (req, res) => {
   let transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-          type: 'OAUTH2',
           user: gmail_user,
-          serviceClient: oauth2.client_id,
-          privateKey: oauth2.private_key
+          pass: gmail_pass,
       }
   });
 
