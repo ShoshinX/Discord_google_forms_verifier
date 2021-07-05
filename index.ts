@@ -1,10 +1,11 @@
 
 import Discord, { Message } from "discord.js";
 // setup your token in src/token.ts
-import {token,guild_id,verified_guild_role_id,website, sender_email, gmail_pass, gmail_user, channel_log_id, google_form_verifier_url,server_name, ban_list} from "./src/token";
+import {token,guild_id,verified_guild_role_id,website, sender_email, gmail_pass, gmail_user, channel_log_id, google_form_verifier_url,server_name, ban_list, send_grid_api_key} from "./src/token";
 import express from "express";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+import sgTransport from "nodemailer-sendgrid";
 
 
 const client = new Discord.Client();
@@ -107,13 +108,7 @@ app.post('/sendEmail', async (req, res) => {
   const recipient = `${zid}@ad.unsw.edu.au`;
   const charset = "UTF-8";
   // Specify the parameters to pass to the API.
-  let transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-          user: gmail_user,
-          pass: gmail_pass,
-      }
-  });
+  let transporter = nodemailer.createTransport(sgTransport({apiKey: send_grid_api_key}));
 
   let mailOptions = {
       from: sender_email,
