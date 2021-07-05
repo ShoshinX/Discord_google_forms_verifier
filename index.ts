@@ -1,7 +1,7 @@
 
 import Discord, { Message } from "discord.js";
 // setup your token in src/token.ts
-import {token,guild_id,verified_guild_role_id,website, sender_email, gmail_pass, gmail_user, channel_log_id} from "./src/token";
+import {token,guild_id,verified_guild_role_id,website, sender_email, gmail_pass, gmail_user, channel_log_id, google_form_verifier_url,server_name, ban_list} from "./src/token";
 import express from "express";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
@@ -30,7 +30,7 @@ client.on('message', async msg => {
     // Fetch latest list of members from server to be stored in cache
     let members = await guild.members.fetch();
     // Find discord tag from list
-    let member = await guild.members.cache.find(u => u.user.tag === discord_id);
+    let member = await guild.members.cache.find(u => u.user.tag.toLowerCase() === discord_id.toLowerCase());
     let verified_role_id = verified_guild_role_id;
     let member_role_manager = member?.roles;
     try {
@@ -38,16 +38,26 @@ client.on('message', async msg => {
     }catch (err) {
       console.log(err);
     }
-    msg.reply("You're verified, otherwise wait a couple mins or ping the execs");
-    (log_channel as Discord.TextChannel).send(`${discord_id} has been verified`);
+    msg.reply(`Thanks! I've verified you. 
+    Feel free to introduce yourself in #introductions and grab some roles from #reacc-roles.
+    Hope you have fun on our server!
+    Otherwise wait a couple mins or ping the execs`
+    );
+    (log_channel as Discord.TextChannel).send(`[${(new Date).toUTCString}]${discord_id} has been verified`);
   } else {
     console.log(`Received a bogus uuid from ${msg.author.tag}: ${id}`)
   }
 })
 
 client.on('guildMemberAdd', member => {
-  //TODO: maybe for sending the google forms link
-  member.send("Sign the google form to get in: https://forms.gle/sSUMV9nLMrSi8rbr6")
+  // If member is on the ban list then ghost.
+  if (ban_list.includes(member.id)) return;
+  member.send(`Hello ${member.user.tag}! Welcome to ${server_name}!
+  Please fill in the following form so our exec team can verify you!
+  ${google_form_verifier_url}
+  Once you're done, feel free to ping the execs so they can give you access to the rest of the server. 
+  
+  Hope you have fun here!`)
   console.log(`${member.user.tag} has entered`)
 })
 
@@ -86,7 +96,7 @@ app.post('/sendEmail', async (req, res) => {
   const is_arc = req.body.is_arc;
   if (is_arc === 'No'){
     let channel = await client.channels.fetch(channel_log_id);
-    (channel as Discord.TextChannel).send(`${discord_id} is a non-arc member, one of the execs please check :)`)
+    (channel as Discord.TextChannel).send(`***${discord_id}*** is a ***non-arc*** member, one of the execs please check :)`)
     res.sendStatus(200);
     return;
   }
@@ -94,7 +104,6 @@ app.post('/sendEmail', async (req, res) => {
   let new_uuid = crypto.randomBytes(16).toString("hex");
   database[new_uuid] = discord_id!.toString();
   // Send email to zid@ad.unsw.edu.au
-  // TODO
   const recipient = `${zid}@ad.unsw.edu.au`;
   const charset = "UTF-8";
   // Specify the parameters to pass to the API.
@@ -110,7 +119,7 @@ app.post('/sendEmail', async (req, res) => {
       from: sender_email,
       to: recipient,
       subject: 'UNSW Art & Drawing Society verification and events',
-      html: `<h1><b>!verifyme ${new_uuid}"</b> Reply back to the bot with this code so that we can see you in the server</h1>`
+      html: `<p><b>!verifyme ${new_uuid}</b></p> <p>Copy paste the above into the bot's dms so that we can see you in the server</p>`
   };
 
   transporter.sendMail(mailOptions, (err, info) => {
@@ -121,7 +130,7 @@ app.post('/sendEmail', async (req, res) => {
   });
 
   res.sendStatus(200);
-  client.channels.fetch(channel_log_id).then(channel => (channel as Discord.TextChannel).send(`Verification email sent for: ${discord_id}`));
+  client.channels.fetch(channel_log_id).then(channel => (channel as Discord.TextChannel).send(`[${Date.now().toLocaleString()}] Verification email sent for: ${discord_id}`));
 })
 
 app.listen(port, () => {
