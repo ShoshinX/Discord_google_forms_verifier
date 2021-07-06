@@ -18,7 +18,22 @@ client.on('ready', () => {
 })
 
 client.on('message', async msg => {
-  // No need for processing messages
+  // Pre-emptive ban
+  if(msg.channel.id === channel_log_id){
+    let prefix = '!ban';
+    if (!msg.content.startsWith(prefix)) return;
+    const args = msg.content.slice(prefix.length).trim().split(/ +/);
+    const id = args.shift()!?.toLowerCase();
+    if (id){
+      let guild = await client.guilds.fetch(guild_id);
+      let user = await guild.members.ban(id);
+      client.channels.fetch(channel_log_id).then(channel => {
+        (channel as Discord.TextChannel).send(`Banned ${user.toString()} from this server`)
+      });
+    }
+    
+  }
+
   let prefix = '!verifyme';
   if (!msg.content.startsWith(prefix)) return;
   const args = msg.content.slice(prefix.length).trim().split(/ +/);
