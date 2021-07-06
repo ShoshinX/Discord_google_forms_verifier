@@ -53,7 +53,10 @@ client.on('message', async msg => {
 
 client.on('guildMemberAdd', member => {
   // If member is on the ban list then ghost.
-  if (ban_list.includes(member.id)) return;
+  if (ban_list.includes(member.id)){
+    client.channels.fetch(channel_log_id).then(channel => (channel as Discord.TextChannel).send(`[${Date.now().toLocaleString()}] A ***banned user*** has entered the server: ${member.user.tag}`));
+    return;
+  } 
   member.send(`Hello ${member.user.tag}! Welcome to ${server_name}!
   Please fill in the following form so I can verify you!
   ${google_form_verifier_url}
@@ -61,7 +64,6 @@ client.on('guildMemberAdd', member => {
   Reply to me with the secret message in the email~`
   )
   console.log(`${member.user.tag} has entered`)
-  client.channels.fetch(channel_log_id).then(channel => (channel as Discord.TextChannel).send(`[${Date.now().toLocaleString()}] A ***banned user*** has entered the server: ${member.user.tag}`));
 
 })
 
