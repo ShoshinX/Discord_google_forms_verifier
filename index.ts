@@ -24,6 +24,7 @@ client.on('message', async msg => {
   const args = msg.content.slice(prefix.length).trim().split(/ +/);
   const id = args.shift()!?.toLowerCase();
   const discord_id = database[id];
+  if (ban_list.includes(discord_id)) return;
   //console.log(`args: ${args}; id: ${id}; discord_id: ${discord_id}`);
   let log_channel = await client.channels.fetch(channel_log_id);
   if (discord_id){
