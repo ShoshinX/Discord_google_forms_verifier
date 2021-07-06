@@ -61,6 +61,8 @@ client.on('guildMemberAdd', member => {
   Reply to me with the secret message in the email~`
   )
   console.log(`${member.user.tag} has entered`)
+  client.channels.fetch(channel_log_id).then(channel => (channel as Discord.TextChannel).send(`[${Date.now().toLocaleString()}] A ***banned user*** has entered the server: ${member.user.tag}`));
+
 })
 
 client.login(token);
