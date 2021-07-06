@@ -97,7 +97,7 @@ app.post('/sendEmail', async (req, res) => {
   const is_arc = req.body.is_arc;
   if (is_arc === 'No'){
     let channel = await client.channels.fetch(channel_log_id);
-    (channel as Discord.TextChannel).send(`***${discord_id}*** is a ***non-arc*** member, <@& 764721153066663947 > please check :)`)
+    (channel as Discord.TextChannel).send(`***${discord_id}*** is a ***non-arc*** member, <@&764721153066663947> please check :)`)
     res.sendStatus(200);
     return;
   }
