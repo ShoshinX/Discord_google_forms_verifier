@@ -24,7 +24,6 @@ client.on('message', async msg => {
   const args = msg.content.slice(prefix.length).trim().split(/ +/);
   const id = args.shift()!?.toLowerCase();
   const discord_id = database[id];
-  if (ban_list.includes(discord_id)) return;
   //console.log(`args: ${args}; id: ${id}; discord_id: ${discord_id}`);
   let log_channel = await client.channels.fetch(channel_log_id);
   if (discord_id){
@@ -33,6 +32,8 @@ client.on('message', async msg => {
     let members = await guild.members.fetch();
     // Find discord tag from list
     let member = await guild.members.cache.find(u => u.user.tag.toLowerCase() === discord_id.toLowerCase());
+    // If member is in ban list exit function
+    if (ban_list.includes(member!?.id)) return;
     let verified_role_id = verified_guild_role_id;
     let member_role_manager = member?.roles;
     try {
