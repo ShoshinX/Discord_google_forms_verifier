@@ -33,7 +33,6 @@ client.on('message', async msg => {
     // Find discord tag from list
     let member = await guild.members.cache.find(u => u.user.tag.toLowerCase() === discord_id.toLowerCase());
     // If member is in ban list exit function
-    if (ban_list.includes(member!?.id)) return;
     let verified_role_id = verified_guild_role_id;
     let member_role_manager = member?.roles;
     try {
@@ -103,6 +102,15 @@ app.post('/sendEmail', async (req, res) => {
     res.sendStatus(200);
     return;
   }
+  //---BAN PART---
+  let guild = await client.guilds.fetch(guild_id);
+    // Fetch latest list of members from server to be stored in cache
+    let members = await guild.members.fetch();
+    // Find discord tag from list
+    let member = await guild.members.cache.find(u => u.user.tag.toLowerCase() === discord_id.toLowerCase());
+    // If member is in ban list exit function
+    if (member && ban_list.includes(member.id)){ res.sendStatus(200); return;}
+  //---BAN PART---
   // This should be fine since we're not storing sensitive personal data.
   let new_uuid = crypto.randomBytes(16).toString("hex");
   database[new_uuid] = discord_id!.toString();
