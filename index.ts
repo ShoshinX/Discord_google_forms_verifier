@@ -45,7 +45,7 @@ client.on('message', async msg => {
     let guild = await client.guilds.fetch(guild_id);
     // Fetch latest list of members from server to be stored in cache
     let members = await guild.members.fetch();
-    // Find discord tag from list
+    // Find discord tag from list1587
     let member = await guild.members.cache.find(u => u.user.tag.toLowerCase() === discord_id.toLowerCase());
     // If member is in ban list exit function
     let verified_role_id = verified_guild_role_id;
@@ -60,7 +60,7 @@ client.on('message', async msg => {
     Hope you have fun on our server!
     Otherwise wait a couple mins or ping the execs`
     );
-    (log_channel as Discord.TextChannel).send(`[${(new Date).toUTCString}]${discord_id} has been verified`);
+    (log_channel as Discord.TextChannel).send(`[${Date().toString()}]${discord_id} has been verified`);
   } else {
     console.log(`Received a bogus uuid from ${msg.author.tag}: ${id}`)
   }
@@ -69,13 +69,13 @@ client.on('message', async msg => {
 client.on('guildMemberAdd', member => {
   // If member is on the ban list then ghost.
   if (ban_list.includes(member.id)){
-    client.channels.fetch(channel_log_id).then(channel => (channel as Discord.TextChannel).send(`[${Date.now().toLocaleString()}] A ***banned user*** has entered the server: ${member.user.tag}`));
+    client.channels.fetch(channel_log_id).then(channel => (channel as Discord.TextChannel).send(`[${Date().toString()}] A ***banned user*** has entered the server: ${member.user.tag}`));
     return;
   } 
   member.send(`Hello ${member.user.tag}! Welcome to ${server_name}!
   Please fill in the following form so I can verify you!
   ${google_form_verifier_url}
-  Once you've filled in the form, our bot should send you an email!
+  Once you've filled in the form, our bot should send you an email to your ***zID UNSW email***!
   Reply to me with the secret message in the email~`
   )
   console.log(`${member.user.tag} has entered`)
@@ -154,7 +154,7 @@ app.post('/sendEmail', async (req, res) => {
   });
 
   res.sendStatus(200);
-  client.channels.fetch(channel_log_id).then(channel => (channel as Discord.TextChannel).send(`[${Date.now().toLocaleString()}] Verification email sent for: ${discord_id}`));
+  client.channels.fetch(channel_log_id).then(channel => (channel as Discord.TextChannel).send(`[${Date().toString()}] Verification email sent for: ${discord_id}`));
 })
 
 app.listen(port, () => {
