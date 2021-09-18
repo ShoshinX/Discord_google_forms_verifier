@@ -138,11 +138,13 @@ app.post('/sendEmail', async (req, res) => {
     return;
   }
   // google forms parses the input such that it has the form of ([A-Z]|[a-z])+#[0-9]{4}, so there shouldn't be any problems unless someone who hasn't entered the server submits there name
-  await db?.run(`UPDATE pendingDiscordMembers SET has_submit_form =TRUE WHERE discord_tag=?`, discord_tag);
+  await db?.run(`UPDATE pendingDiscordMembers SET has_submit_form=TRUE WHERE discord_tag=?`, discord_tag);
   // Send email to zid@ad.unsw.edu.au
   const recipient = `${zid}@ad.unsw.edu.au`;
   const charset = "UTF-8";
+  console.log(discord_tag);
   let row = await db?.get("SELECT * FROM pendingDiscordMembers WHERE discord_tag=?", discord_tag);
+  console.log(row);
   // Specify the parameters to pass to the API.
   let transporter = nodemailer.createTransport(sgTransport({apiKey: send_grid_api_key}));
 
