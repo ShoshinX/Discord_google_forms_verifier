@@ -77,10 +77,8 @@ client.on('message', async msg => {
   let log_channel = await client.channels.fetch(channel_log_id);
   if (discord_id){
     let guild = await client.guilds.fetch(guild_id);
-    // Fetch latest list of members from server to be stored in cache
-    let members = await guild.members.fetch();
     // Find discord tag from list1587
-    let member = await guild.members.cache.find(u => u.user.tag.toLowerCase() === discord_id.toLowerCase());
+    let member = await guild.members.resolve(discord_id);
     // If member is in ban list exit function
     let verified_role_id = verified_guild_role_id;
     let member_role_manager = member?.roles;
@@ -94,7 +92,7 @@ client.on('message', async msg => {
     Hope you have fun on our server!
     Otherwise wait a couple mins or ping the execs`
     );
-    (log_channel as Discord.TextChannel).send(`[${Date().toString()}]${discord_id} has been verified`);
+    (log_channel as Discord.TextChannel).send(`[${Date().toString()}]${member?.user.tag} has been verified`);
   } else {
     console.log(`Received a bogus uuid from ${msg.author.tag}: ${verification_code}`)
   }
