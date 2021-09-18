@@ -113,7 +113,7 @@ client.on('guildMemberAdd', async member => {
   (channel as Discord.TextChannel).send(`Hello ${member.user.tag}! Welcome to ${server_name}!
   Please fill in the following form so I can verify you!
   ${google_form_verifier_url}
-  Once you've filled in the form, our bot should send you an email to your ***zID UNSW email***!
+  Once you've filled in the form, our bot should send you an email to your ***inbox*** or ***junk/spam*** to your ***zID UNSW email***!
   Reply to me with the secret message in the email~`
   )
 })
@@ -138,7 +138,7 @@ app.post('/sendEmail', async (req, res) => {
     return;
   }
   // google forms parses the input such that it has the form of ([A-Z]|[a-z])+#[0-9]{4}, so there shouldn't be any problems unless someone who hasn't entered the server submits there name
-  await db?.run(`UPDATE pendingDiscordMembers SET has_submit_form =TRUE WHERE discord_tag=${discord_tag}`);
+  await db?.run(`UPDATE pendingDiscordMembers SET has_submit_form =TRUE WHERE discord_tag=?`, discord_tag);
   // Send email to zid@ad.unsw.edu.au
   const recipient = `${zid}@ad.unsw.edu.au`;
   const charset = "UTF-8";
