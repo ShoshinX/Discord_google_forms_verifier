@@ -105,7 +105,7 @@ client.on('guildMemberAdd', async member => {
   let guild = await client.guilds.fetch(guild_id);
   let channel = await guild.channels.resolve(channel_welcome_id);
   // This should be fine since we're not storing sensitive personal data.
-  await db?.run("INSERT OR REPLACE INTO pendingDiscordMembers (discord_id, discord_tag, has_submit_form, verification) VALUES (?,?,FALSE,?)", 
+  await db?.run("INSERT OR REPLACE INTO pendingDiscordMembers (discord_id, discord_tag, has_submit_form, verification_code) VALUES (?,?,FALSE,?)", 
   `${member.id}`,
   `${member.user.tag}`,
   `${crypto.randomBytes(16).toString("hex")}`);
