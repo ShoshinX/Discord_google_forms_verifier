@@ -1,4 +1,3 @@
-
 import Discord, { Message } from "discord.js";
 // setup your token in src/token.ts
 import {token,guild_id,verified_guild_role_id, sender_email, channel_log_id, google_form_verifier_url,server_name, send_grid_api_key, channel_welcome_id, exec_mention} from "./src/token";
@@ -167,4 +166,4 @@ app.post('/sendEmail', async (req, res) => {
 app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}`)
 })
-});
+})();
