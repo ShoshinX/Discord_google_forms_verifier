@@ -108,7 +108,7 @@ client.on('guildMemberAdd', async member => {
   `${member.user.tag}`,
   `${crypto.randomBytes(16).toString("hex")}`);
 
-  (channel as Discord.TextChannel).send(`Hello ${member.user.tag}! Welcome to ${server_name}!
+  (channel as Discord.TextChannel).send(`Hello <@${member.id}>! Welcome to ${server_name}!
   Please fill in the following form so I can verify you!
   ${google_form_verifier_url}
   Once you've filled in the form, our bot should send you an email to your ***inbox*** or ***junk/spam*** to your ***zID UNSW outlook email***!
