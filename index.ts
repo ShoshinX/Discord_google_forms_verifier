@@ -111,8 +111,9 @@ client.on('guildMemberAdd', async member => {
   (channel as Discord.TextChannel).send(`Hello <@${member.id}>! Welcome to ${server_name}!
   Please fill in the following form so I can verify you!
   ${google_form_verifier_url}
-  Once you've filled in the form, our bot should send you an email to your ***inbox*** or ***junk/spam*** to your ***zID UNSW outlook email***!
-  Reply to me with the secret message in the email~`
+  Once you've filled in the form:
+- ***If you're a UNSW student***, a bot will send a code to your UNSW email - make sure you check junk/spam if it's not in your inbox!
+- ***If you're not a UNSW student***, an exec will verify you manually! `
   )
 })
 
